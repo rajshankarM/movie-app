@@ -1,25 +1,15 @@
-import { useState, useEffect   } from "react";
+import { useState  } from "react";
 import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
 import { useHistory } from "react-router-dom";
 
-export function AddMovie({ movies, setMovies }) {
+export function AddMovie() {
   const history = useHistory();
   const [name, setName] = useState("");
   const [poster, setPoster] = useState("");
   const [rating, setRating] = useState("");
   const [summary, setSummary] = useState("");
   const [trailer, setTrailer] = useState("");
-
-  useEffect(()=>{
-    console.log("movie form is Updated", {
-      name,
-      poster,
-      rating,
-      summary,
-      trailer,
-    })
-  });
 
   const addMovie = () => {
     const newMovie = {
@@ -30,8 +20,20 @@ export function AddMovie({ movies, setMovies }) {
       trailer,
     };
     console.log(newMovie);
-    setMovies([...movies, newMovie]);
-    history.push("/movies");
+    // setMovies([...movies, newMovie]);
+
+
+    fetch(
+      `https://62075b8c92dd6600171c0d88.mockapi.io/movies/`,
+      {
+        method: "POST",
+        body: JSON.stringify(newMovie),
+        headers: {
+          "Content-Type" : "application/json"
+        }
+      }
+    ).then(()=> history.push("/movies"))
+   
   };
 
   return (
@@ -72,3 +74,5 @@ export function AddMovie({ movies, setMovies }) {
     </div>
   );
 }
+
+

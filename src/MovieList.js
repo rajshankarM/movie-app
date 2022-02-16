@@ -3,28 +3,42 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import IconButton from "@mui/material/IconButton";
 import EditIcon from "@mui/icons-material/Edit";
 import { useHistory } from "react-router-dom";
+import { useEffect, useState } from "react";
 
-export function MovieList({ movies, setMovies }) {
+export function MovieList() {
+  const [movies, setMovies] = useState([]);
+
+  const getMovies = () => {
+    fetch("https://62075b8c92dd6600171c0d88.mockapi.io/movies")
+      .then((data) => data.json())
+      .then((mvs) => setMovies(mvs));
+  }
+
+  useEffect(getMovies, []);
+
+  const deleteMovie = (id) => {
+                
+    fetch(
+      `https://62075b8c92dd6600171c0d88.mockapi.io/movies/${id}`,
+      {
+        method: "DELETE",
+      }
+    ).then(()=> getMovies())
+  }
+
   const history = useHistory();
   return (
     <div className="movie-list">
-      {movies.map(({ name, rating, summary, poster }, index) => (
+      {movies.map(({ name, rating, summary, poster, id }, index) => (
         <Movie
           name={name}
           rating={rating}
           summary={summary}
           poster={poster}
-          id={index}
+          id={id}
           deleteButton={
             <IconButton
-              onClick={() => {
-                console.log("Deleting...", index);
-                const deleteIdx = index;
-                const remainingMovies = movies.filter(
-                  (mv, idx) => idx !== deleteIdx
-                );
-                setMovies(remainingMovies);
-              }}
+              onClick={() => deleteMovie(id)}
               className="movie-show-button"
               aria-label="delete movie"
               color="error"
@@ -34,7 +48,7 @@ export function MovieList({ movies, setMovies }) {
           }
           editButton={
             <IconButton
-             style={{marginLeft: "auto"}}
+              style={{ marginLeft: "auto" }}
               onClick={() => history.push("/movies/edit/" + index)}
               className="movie-show-button"
               aria-label="edit movie"
@@ -48,3 +62,10 @@ export function MovieList({ movies, setMovies }) {
     </div>
   );
 }
+
+// console.log("Deleting...", index);
+                // const deleteIdx = index;
+                // const remainingMovies = movies.filter(
+                //   (mv, idx) => idx !== deleteIdx
+                // );
+                // setMovies(remainingMovies);
